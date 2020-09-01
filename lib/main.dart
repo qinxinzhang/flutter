@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'bottom_appbar_demo.dart';
+import 'package:my_flutter_app/bottom_navigation_widget.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: BottomAppBarDemo(),
+      home: BottomNavigationWidget(),
     );
   }
 }
