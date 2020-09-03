@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:my_flutter_app/generated/json/list_response_entity_helper.dart';
+import 'package:my_flutter_app/model/list_response_entity.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeState extends State<HomeScreen> {
-  List data;
+  List<ListResponseDataData> data;
 
   @override
   void initState() {
@@ -20,17 +23,14 @@ class HomeState extends State<HomeScreen> {
   }
 
   void _pullNet() async {
-    await http
-        .get("http://www.wanandroid.com/project/list/1/json?cid=1")
-        .then((http.Response response) {
-      var convertDataToJson = json.decode(response.body);
-      convertDataToJson = convertDataToJson["data"]["datas"];
-      print(convertDataToJson);
+    Dio dio = new Dio();
+    var response = await
+        dio.get("http://www.wanandroid.com/project/list/1/json?cid=1");
+      ListResponseEntity listResponseEntity = listResponseEntityFromJson(new ListResponseEntity(), response.data);
 
       setState(() {
-        data = convertDataToJson;
+        data = listResponseEntity.data.datas;
       });
-    });
   }
 
   @override
@@ -85,12 +85,12 @@ class HomeState extends State<HomeScreen> {
               new Column(
                 children: <Widget>[
                   new Text(
-                    "${item["title"]}".trim(),
+                    item.title.trim(),
                     style: new TextStyle(color: Colors.black, fontSize: 20.0),
                     textAlign: TextAlign.left,
                   ),
                   new Text(
-                    "${item["desc"]}",
+                    item.desc,
                     maxLines: 3,
                   )
                 ],
@@ -101,7 +101,7 @@ class HomeState extends State<HomeScreen> {
         new ClipRect(
           child: new FadeInImage.assetNetwork(
             placeholder: "images/lake.jpg",
-            image: "${item['envelopePic']}",
+            image: item.envelopePic,
             width: 50.0,
             height: 50.0,
             fit: BoxFit.fitWidth,
