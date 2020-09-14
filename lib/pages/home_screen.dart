@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:my_flutter_app/generated/json/list_response_entity_helper.dart';
 import 'package:my_flutter_app/model/list_response_entity.dart';
 
@@ -24,21 +22,41 @@ class HomeState extends State<HomeScreen> {
 
   void _pullNet() async {
     Dio dio = new Dio();
-    var response = await
-        dio.get("http://www.wanandroid.com/project/list/1/json?cid=1");
-      ListResponseEntity listResponseEntity = listResponseEntityFromJson(new ListResponseEntity(), response.data);
+    var response =
+        await dio.get("http://www.wanandroid.com/project/list/1/json?cid=1");
+    ListResponseEntity listResponseEntity =
+        listResponseEntityFromJson(new ListResponseEntity(), response.data);
 
-      setState(() {
-        data = listResponseEntity.data.datas;
-      });
+    setState(() {
+      data = listResponseEntity.data.datas;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new ListView(
-        children: data != null ? _getItem() : _loading(),
-      ),
+      body: ListView.builder(
+          itemCount: data != null ? data.length : 1,
+          itemBuilder: (BuildContext ctext, int index) {
+            if (data == null) {
+              return new Container(
+                height: 300.0,
+                child: new Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      new CircularProgressIndicator(
+                        strokeWidth: 1.0,
+                      ),
+                      new Text("loading"),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return _getRowWidget(data[index]);
+            }
+          }),
     );
   }
 
@@ -75,39 +93,42 @@ class HomeState extends State<HomeScreen> {
   }
 
   Widget _getRowWidget(item) {
-    return Row(
-      children: <Widget>[
-        new Flexible(
-          flex: 1,
-          fit: FlexFit.tight,
-          child: new Stack(
-            children: <Widget>[
-              new Column(
-                children: <Widget>[
-                  new Text(
-                    item.title.trim(),
-                    style: new TextStyle(color: Colors.black, fontSize: 20.0),
-                    textAlign: TextAlign.left,
-                  ),
-                  new Text(
-                    item.desc,
-                    maxLines: 3,
-                  )
-                ],
-              )
-            ],
+    return Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Row(
+        children: <Widget>[
+          Flexible(
+            flex: 1,
+            fit: FlexFit.tight,
+            child: new Stack(
+              children: <Widget>[
+                new Column(
+                  children: <Widget>[
+                    new Text(
+                      item.title.trim(),
+                      style: new TextStyle(color: Colors.black, fontSize: 20.0),
+                      textAlign: TextAlign.left,
+                    ),
+                    new Text(
+                      item.desc,
+                      maxLines: 3,
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
-        ),
-        new ClipRect(
-          child: new FadeInImage.assetNetwork(
-            placeholder: "images/lake.jpg",
-            image: item.envelopePic,
-            width: 50.0,
-            height: 50.0,
-            fit: BoxFit.fitWidth,
+          new ClipRect(
+            child: new FadeInImage.assetNetwork(
+              placeholder: "images/lake.jpg",
+              image: item.envelopePic,
+              width: 50.0,
+              height: 50.0,
+              fit: BoxFit.fitWidth,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
