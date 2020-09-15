@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_flutter_app/generated/json/list_response_entity_helper.dart';
 import 'package:my_flutter_app/model/list_response_entity.dart';
+import 'detail_pages/blog_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -38,24 +39,30 @@ class HomeState extends State<HomeScreen> {
       body: ListView.builder(
           itemCount: data != null ? data.length : 1,
           itemBuilder: (BuildContext ctext, int index) {
-            if (data == null) {
-              return new Container(
-                height: 300.0,
-                child: new Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new CircularProgressIndicator(
-                        strokeWidth: 1.0,
+            return InkWell(
+              child: data != null
+                  ? _getRowWidget(data[index])
+                  : new Container(
+                      height: 300.0,
+                      child: new Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            new CircularProgressIndicator(
+                              strokeWidth: 1.0,
+                            ),
+                            new Text("loading"),
+                          ],
+                        ),
                       ),
-                      new Text("loading"),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              return _getRowWidget(data[index]);
-            }
+                    ),
+              onTap: (){
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (BuildContext context) {
+                  return BlogDetailScreen(data[index]);
+                }));
+              },
+            );
           }),
     );
   }
@@ -93,42 +100,46 @@ class HomeState extends State<HomeScreen> {
   }
 
   Widget _getRowWidget(item) {
-    return Padding(
-      padding: EdgeInsets.all(10.0),
-      child: Row(
-        children: <Widget>[
-          Flexible(
-            flex: 1,
-            fit: FlexFit.tight,
-            child: new Stack(
-              children: <Widget>[
-                new Column(
-                  children: <Widget>[
-                    new Text(
-                      item.title.trim(),
-                      style: new TextStyle(color: Colors.black, fontSize: 20.0),
-                      textAlign: TextAlign.left,
-                    ),
-                    new Text(
-                      item.desc,
-                      maxLines: 3,
-                    )
-                  ],
-                )
-              ],
+    return Card(
+      child: new Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          children: <Widget>[
+            Flexible(
+              flex: 1,
+              fit: FlexFit.tight,
+              child: new Stack(
+                children: <Widget>[
+                  new Column(
+                    children: <Widget>[
+                      new Text(
+                        item.title.trim(),
+                        style: new TextStyle(color: Colors.black, fontSize: 20.0),
+                        textAlign: TextAlign.left,
+                      ),
+                      new Text(
+                        item.desc,
+                        maxLines: 3,
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-          new ClipRect(
-            child: new FadeInImage.assetNetwork(
-              placeholder: "images/lake.jpg",
-              image: item.envelopePic,
-              width: 50.0,
-              height: 50.0,
-              fit: BoxFit.fitWidth,
+            new ClipRect(
+              child: new FadeInImage.assetNetwork(
+                placeholder: "images/lake.jpg",
+                image: item.envelopePic,
+                width: 50.0,
+                height: 50.0,
+                fit: BoxFit.fitWidth,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      elevation: 3.0,
+      margin: const EdgeInsets.all(10.0),
     );
   }
 }
