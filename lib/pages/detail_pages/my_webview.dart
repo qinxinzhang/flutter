@@ -26,7 +26,7 @@ class MyWebviewState extends State<MyWebview> {
       body: Stack(
         children: <Widget>[
           WebView(
-            initialUrl: "https://www.wanandroid.com" + widget._url,
+            initialUrl: widget._url,
             javascriptMode: JavascriptMode.unrestricted,
             onPageFinished: (finish) {
               setState(() {
